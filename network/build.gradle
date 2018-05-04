@@ -1,0 +1,48 @@
+apply from: "${rootProject.rootDir}/common_config.gradle"
+if(project.ext.isLib){
+    apply plugin: 'com.android.library'
+    apply from: 'fat-aar.gradle'
+}else {
+    apply plugin: 'com.android.application'
+}
+
+android {
+    compileSdkVersion project.ext.compileSdkVersion
+
+    buildToolsVersion project.ext.buildToolsVersion
+
+    defaultConfig {
+        if (!project.ext.isLib) {
+            applicationId project.ext.applicationId
+        }
+        minSdkVersion project.ext.minSdkVersion
+        targetSdkVersion project.ext.targetSdkVersion
+        versionCode project.ext.versionCode
+        versionName project.ext.versionName
+    }
+    buildTypes {
+        buildTypes {
+            release {
+                // 是否进行混淆打包
+                minifyEnabled project.ext.minifyEnabled
+                zipAlignEnabled project.ext.zipAlignEnabled
+                shrinkResources project.ext.shrinkResources
+                // 混淆文件的位置
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                buildConfigField("String", "API_URL", "\"https://mbp.jianke.com/mbm/doctor/api/\"")
+                buildConfigField("boolean", "ISRELEASE", "true")
+            }
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    // 网络请求 retrofit + okhttp + gson
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.okhttp3:okhttp:3.7.0'
+    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+}
